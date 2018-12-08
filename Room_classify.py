@@ -1,10 +1,14 @@
 import cv2
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
+from scipy import interp
+from itertools import cycle
 from keras.preprocessing import image
+from sklearn.metrics import roc_curve,auc
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+import matplotlib.pyplot as plt
 import tensorflow as tf
 
 folders = ['E:\\Git\\Machine_Learning\\Datasets\\Images\\auditorium',
@@ -44,6 +48,8 @@ for folder in folders:
     load_image_from_folder(folder)
 x = np.array(images)/255
 y = np.array(labels)
+room_label = set(labels)
+room_label = list(room_label)
 
 # integer encode
 label_encoder = LabelEncoder()
@@ -105,13 +111,7 @@ print(cnn.metrics_names)
 print(score)
 
 # ROC Curve 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn import datasets
-from sklearn.metrics import roc_curve,auc
-from scipy import interp
-from itertools import cycle
+
 
 
 n_classes=4
@@ -158,10 +158,12 @@ plt.plot(fpr["macro"], tpr["macro"],
          color='green', linestyle=':', linewidth=4)
 
 colors = cycle(['aqua', 'darkorange', 'cornflowerblue', 'red'])
+
 for i, color in zip(range(n_classes), colors):
+        
     plt.plot(fpr[i], tpr[i], color=color, lw=lw,
              label='ROC curve of class {0} (area = {1:0.2f})'
-             ''.format(i, roc_auc[i]))
+             ''.format(room_label[i], roc_auc[i]))
 
 plt.plot([0, 1], [0, 1], 'k--',color='red', lw=lw)
 plt.xlim([0.0, 1.0])
