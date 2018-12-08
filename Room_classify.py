@@ -9,9 +9,9 @@ import tensorflow as tf
 
 folders = ['E:\\Git\\Machine_Learning\\Datasets\\Images\\auditorium',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\bakery',
-'E:\\Git\\Machine_Learning\\Datasets\\Images\\bedroom']
+'E:\\Git\\Machine_Learning\\Datasets\\Images\\bedroom',
+'E:\\Git\\Machine_Learning\\Datasets\\Images\\bookstore']
 '''
-'E:\\Git\\Machine_Learning\\Datasets\\Images\\bookstore',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\concert_hall',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\dining_room',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\gym',
@@ -35,16 +35,16 @@ def load_image_from_folder(folder):
             label = folder.split(os.path.sep)[-1]
             labels.append(label)
             images.append(img)
-            print(os.path.join(folder, filename))
+           
         except:
-            print("Skip!!")
+       
             continue
 
 for folder in folders:
     load_image_from_folder(folder)
 x = np.array(images)/255
 y = np.array(labels)
-print(y)
+
 # integer encode
 label_encoder = LabelEncoder()
 integer_encoded = label_encoder.fit_transform(y)
@@ -82,7 +82,7 @@ cnn.add(MaxPooling2D(pool_size = (3, 3)))
 cnn.add(Flatten())
 cnn.add(Dense(150, activation='relu'))
 cnn.add(Dense(64, activation='relu'))
-cnn.add(Dense(3, activation='softmax'))
+cnn.add(Dense(4, activation='softmax'))
 
 cnn.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 print(cnn.summary())
@@ -96,8 +96,7 @@ plt.show()
 
 #Test Image
 
-print(y_test[:20])
-plt.imshow(x_test[4])
+
 result = cnn.predict_classes(x_test, batch_size=32, verbose=1)
 print(result)
 
@@ -115,7 +114,7 @@ from scipy import interp
 from itertools import cycle
 
 
-n_classes=3
+n_classes=4
 
 
 pred1=cnn.predict(x_test)
@@ -124,9 +123,18 @@ pred1=cnn.predict(x_test)
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
+print(result[:10])
+actual = []
+for i in range(len(y_test)):
+    for j in range(n_classes):
+        if y_test[i][j] == 1:
+            actual.append(j)
+actual = np.array(actual)
+print(np.shape(actual))
+print(np.shape(pred1))
 
 for i in range(n_classes):
-    fpr[i], tpr[i], _ = roc_curve(np.array(pd.get_dummies(y_test))[:, i], np.array(pd.get_dummies(pred1))[:, i])
+    fpr[i], tpr[i], _ = roc_curve(np.array(pd.get_dummies(actual))[:, i], np.array(pd.get_dummies(result))[:, i])
     roc_auc[i] = auc(fpr[i], tpr[i])
 
 
@@ -149,7 +157,7 @@ plt.plot(fpr["macro"], tpr["macro"],
                ''.format(roc_auc["macro"]),
          color='green', linestyle=':', linewidth=4)
 
-colors = cycle(['aqua', 'darkorange', 'cornflowerblue'])
+colors = cycle(['aqua', 'darkorange', 'cornflowerblue', 'red'])
 for i, color in zip(range(n_classes), colors):
     plt.plot(fpr[i], tpr[i], color=color, lw=lw,
              label='ROC curve of class {0} (area = {1:0.2f})'
@@ -161,6 +169,6 @@ plt.ylim([0.0, 1.05])
 plt.annotate('Random Guess',(.5,.48),color='red')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic for Naive Bayes - IRIS DATASET')
+plt.title('Convolution Evaluation (ROC Curve) - Room Classifier')
 plt.legend(loc="lower right")
 plt.show()
