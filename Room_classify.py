@@ -14,8 +14,7 @@ import tensorflow as tf
 folders = ['E:\\Git\\Machine_Learning\\Datasets\\Images\\auditorium',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\bakery',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\bedroom',
-'E:\\Git\\Machine_Learning\\Datasets\\Images\\bookstore']
-'''
+'E:\\Git\\Machine_Learning\\Datasets\\Images\\bookstore',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\concert_hall',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\dining_room',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\gym',
@@ -25,7 +24,6 @@ folders = ['E:\\Git\\Machine_Learning\\Datasets\\Images\\auditorium',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\mall',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\movietheater',
 'E:\\Git\\Machine_Learning\\Datasets\\Images\\museum']
-'''
 sess = tf.Session()
 images = []
 labels = []
@@ -85,10 +83,13 @@ cnn.add(MaxPooling2D(pool_size = (3, 3)))
 cnn.add(Conv2D(68, (3, 3) ,activation='relu'))
 cnn.add(MaxPooling2D(pool_size = (3, 3)))
 
+cnn.add(Conv2D(68, (3, 3) ,activation='relu'))
+cnn.add(MaxPooling2D(pool_size = (3, 3)))
+
+
 cnn.add(Flatten())
 cnn.add(Dense(150, activation='relu'))
-cnn.add(Dense(64, activation='relu'))
-cnn.add(Dense(4, activation='softmax'))
+cnn.add(Dense(3, activation='softmax'))
 
 cnn.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 print(cnn.summary())
@@ -111,15 +112,9 @@ print(cnn.metrics_names)
 print(score)
 
 # ROC Curve 
-
-
-
 n_classes=4
-
-
 pred1=cnn.predict(x_test)
 
-### MACRO
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
